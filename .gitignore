@@ -1,0 +1,8 @@
+# 忽略.vscode目录
+.vscode/
+# 忽略main文件
+main
+*.exe
+# 忽略.git目录
+.git/
+opfile*
