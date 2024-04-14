@@ -2,6 +2,7 @@ package _zip
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -9,8 +10,21 @@ import (
 	"strings"
 )
 
-// 全部压缩
 func ZipAll(src, dst string) (err error) {
+	// 获取src文件信息
+	fi, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	// 如果是文件，直接压缩
+	if !fi.IsDir() {
+		return compressFile(src, dst)
+	}
+	return zipAll(src, dst)
+}
+
+// 全部压缩
+func zipAll(src, dst string) (err error) {
 	// 创建准备写入的文件
 	fw, err := os.Create(dst)
 	if err != nil {
@@ -88,6 +102,64 @@ func ZipAll(src, dst string) (err error) {
 
 		return nil
 	})
+}
+
+func compressFile(filePath, destZipPath string) error { //压缩单个iso文件(9.8GB)，使用7z解压时会出现头部错误
+	// 如果目标文件已存在，则删除
+	if _, err := os.Stat(destZipPath); err == nil {
+		if err := os.Remove(destZipPath); err != nil {
+			return err
+		}
+	}
+
+	// 创建 zip 文件
+	zipFile, err := os.Create(destZipPath)
+	if err != nil {
+		return err
+	}
+	defer zipFile.Close()
+
+	// 创建 zip.Writer 对象
+	zipWriter := zip.NewWriter(zipFile)
+	defer zipWriter.Close()
+
+	// 打开要压缩的文件
+	fileToCompress, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	fmt.Println("fileToCompress.Name(): ", fileToCompress.Name())
+	defer fileToCompress.Close()
+
+	// 获取文件信息
+	fileInfo, err := fileToCompress.Stat()
+	if err != nil {
+		return err
+	}
+
+	// 创建 zip 文件中的文件头信息
+	header, err := zip.FileInfoHeader(fileInfo)
+	if err != nil {
+		return err
+	}
+
+	// 指定文件名为压缩文件的基本名
+	header.Name = filepath.Base(filePath)
+	header.Method = zip.Deflate
+
+	// 向 zip 文件中添加文件
+	writer, err := zipWriter.CreateHeader(header)
+	if err != nil {
+		return err
+	}
+
+	// 将文件内容复制到 zip 文件中
+	_, err = io.Copy(writer, fileToCompress)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // 排除指定的目录

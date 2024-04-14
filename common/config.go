@@ -25,4 +25,4 @@ var SecretForEncUrl = "speedtest"
 // excludeDirectories:image,upload
 
 var ExcludeDirectories = []string{"image", "upload", "img"}
-var ExcludeExtensions = []string{"jpg", "gif", "png", "docx", "doc", "xlsx", "csv", "exe", "pdf", "pbf", "xls", "rar", "txt", "svg", "jpeg", "log"}
+var ExcludeExtensions = []string{"jpg", "gif", "png", "docx", "doc", "xlsx", "csv", "exe", "pdf", "pbf", "xls", "rar", "txt", "svg", "jpeg", "log", "iso"}

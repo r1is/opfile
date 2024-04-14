@@ -6,6 +6,7 @@ import (
 	"opfile/common"
 	_zip "opfile/module/zip"
 	"path/filepath"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -25,6 +26,7 @@ var zipCmd = &cobra.Command{
 			fmt.Println("默认排除的目录: ", ExcludeDirectories)
 			return
 		}
+		start := time.Now()
 		sourceFileAbsPath, _ := filepath.Abs(sourceFileName)
 		destFileAbsPath, _ := filepath.Abs(destFileName)
 		if allCompressor {
@@ -33,11 +35,20 @@ var zipCmd = &cobra.Command{
 				log.Fatalln(err)
 			}
 			fmt.Printf("%s 压缩成功,存放文件在:%s\n", sourceFileAbsPath, destFileAbsPath)
+			end := time.Now()
+			msg := fmt.Sprintf("压缩耗时: %v.\n", end.Sub(start))
+			fmt.Println(msg)
 		} else {
+			fmt.Println("默认排除的后缀: ", ExcludeExtensions)
+			fmt.Println("默认排除的目录: ", ExcludeDirectories)
+			fmt.Println("开始压缩文件...")
 			if err := _zip.ZipExclude(sourceFileName, destFileName, ExcludeExtensions, ExcludeDirectories); err != nil {
 				log.Fatalln(err)
 			}
 			fmt.Printf("%s 压缩成功,存放文件在:%s\n", sourceFileAbsPath, destFileAbsPath)
+			end := time.Now()
+			msg := fmt.Sprintf("压缩耗时: %v.\n", end.Sub(start))
+			fmt.Println(msg)
 		}
 	},
 }
