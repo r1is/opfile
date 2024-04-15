@@ -2,7 +2,6 @@ package _zip
 
 import (
 	"archive/zip"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -128,7 +127,7 @@ func compressFile(filePath, destZipPath string) error { //压缩单个iso文件(
 	if err != nil {
 		return err
 	}
-	fmt.Println("fileToCompress.Name(): ", fileToCompress.Name())
+	// fmt.Println("fileToCompress.Name(): ", fileToCompress.Name())
 	defer fileToCompress.Close()
 
 	// 获取文件信息
